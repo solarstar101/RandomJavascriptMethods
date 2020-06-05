@@ -1,0 +1,38 @@
+//state data hook i created can be implemented easiy anywhere else if you do not want to use context or redux...
+quick and simple way 
+
+
+import { useEffect, useState } from "react";
+import axios from "axios";
+
+const LAND_SOLD_URL = "https://api.farmlandfinder.com/area/get-all-for-sale";
+
+interface Data {
+  lands: any;
+  isFetching: boolean;
+}
+
+const useStateData = (state: any) => {
+  const [data, setData] = useState<Data>({ lands: [], isFetching: false });
+
+  useEffect(() => {
+    const fetchLandSold = async () => {
+      try {
+        const response = await axios.get(LAND_SOLD_URL);
+
+        const results = response.data.filter(
+          (land: any) => land.properties.state_name === state
+        );
+
+        setData({ lands: results, isFetching: false });
+      } catch (e) {
+        console.log(e);
+      }
+    };
+    fetchLandSold();
+  }, [state]);
+
+  return data;
+};
+
+export default useStateData;
